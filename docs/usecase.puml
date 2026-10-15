@@ -1,0 +1,95 @@
+@startuml dyve_toy_usecase
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+
+title DYVE 토이 앱 유스케이스 다이어그램
+
+actor "관객" as Audience
+
+rectangle "DYVE 토이 앱" {
+
+  rectangle "상단 메뉴" as C_Header
+  rectangle "홈 탭" as C_Home
+  rectangle "티켓 탭" as C_Ticket
+  rectangle "베뉴 탭" as C_Venue
+  rectangle "마이 탭" as C_My
+
+  package "상단 메뉴 기능" as P_Header {
+    usecase "통합 검색\n공연, 아티스트, 베뉴" as UC_Search
+    usecase "추천 검색어 선택" as UC_Keyword
+    usecase "알림 확인" as UC_Noti
+    usecase "찜한 파티 보기" as UC_Liked
+  }
+
+  package "홈 화면 기능" as P_Home {
+    usecase "추천 공연 배너 보기" as UC_Banner
+    usecase "예매 가능한 행사 보기" as UC_OnSale
+    usecase "DYVE PICK 보기" as UC_Pick
+    usecase "관객, 주최자 안내 보기" as UC_Guide
+  }
+
+  package "이벤트 목록 기능" as P_Ticket {
+    usecase "다가오는 이벤트 보기" as UC_EventList
+    usecase "기간 필터 적용\n오늘 밤, 이번 주, 전체" as UC_EventFilter
+  }
+
+  package "공연 상세, 예매 기능" as P_Event {
+    usecase "공연 상세 보기\n라인업, 소개, 안내, 환불 규정" as UC_Detail
+    usecase "참석자 보기" as UC_Going
+    usecase "티켓 예매" as UC_Book
+    usecase "관람 회차 선택" as UC_Round
+    usecase "티켓 수량 선택" as UC_Qty
+    usecase "결제 수단 선택" as UC_PayMethod
+    usecase "모의 결제" as UC_Pay
+    note "실제 결제 없음\n더미 데이터로 티켓 발급" as N_Pay
+  }
+
+  package "베뉴 기능" as P_Venue {
+    usecase "지도로 보기" as UC_Map
+    usecase "목록으로 보기" as UC_VenueList
+    usecase "베뉴 검색" as UC_VenueSearch
+    usecase "필터 적용\n지역, 유형, 장르, 기간" as UC_VenueFilter
+    usecase "베뉴 상세 보기" as UC_VenueDetail
+    usecase "베뉴 찜하기" as UC_VenueLike
+  }
+
+  package "마이 기능" as P_My {
+    usecase "모의 로그인\n카카오, 네이버" as UC_Login
+    usecase "내 티켓 보기" as UC_MyTicket
+    usecase "QR 티켓 제시" as UC_QR
+    usecase "고객센터 보기" as UC_Support
+  }
+}
+
+Audience --> C_Header
+Audience --> C_Home
+Audience --> C_Ticket
+Audience --> C_Venue
+Audience --> C_My
+
+C_Header --> P_Header
+C_Home --> P_Home
+C_Home --> P_Event
+C_Ticket --> P_Ticket
+C_Ticket --> P_Event
+C_Venue --> P_Venue
+C_My --> P_My
+
+UC_Keyword .> UC_Search : <<extend>>
+UC_EventFilter .> UC_EventList : <<extend>>
+UC_Going .> UC_Detail : <<extend>>
+
+UC_Book ..> UC_Round : <<include>>
+UC_Book ..> UC_Qty : <<include>>
+UC_Book ..> UC_PayMethod : <<include>>
+UC_Book ..> UC_Pay : <<include>>
+
+UC_VenueFilter .> UC_VenueList : <<extend>>
+UC_VenueList ..> UC_VenueDetail : <<include>>
+UC_QR .> UC_MyTicket : <<extend>>
+
+note "로그인 필요 - 예매, 알림, 찜,\n참석자 보기, 내 티켓\n토이 앱은 모의 로그인으로 처리" as N_Login
+N_Login .. C_My
+
+@enduml
